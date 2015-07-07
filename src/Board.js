@@ -50,6 +50,7 @@
       );
     },
 
+    // This should rather have a time complexity of O(n^2)
     hasAnyQueensConflicts: function() {
       return this.hasAnyRooksConflicts() || this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts();
     },

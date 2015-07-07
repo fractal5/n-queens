@@ -17,7 +17,7 @@ window.solveBoard = function(row, board, conflictFn, solutions) {
   var solution = 0;
   var n = board.get('n');
 
-  var recurseBoard = function(row, board) {
+  var recurseBoard = function(row, board, isMiddleCol ) {
     
     // for the columns in the given row
     for (var col = 0; col < n; col++) {
@@ -30,18 +30,27 @@ window.solveBoard = function(row, board, conflictFn, solutions) {
         if (row === (n - 1)) {
           // we need to provide a new copy of the board to push to solution
 
-          // Make a deep copy of the board solution
-          var rowsCopy = JSON.parse(JSON.stringify(board.rows()));
-          solutions.push(rowsCopy);
+          // Only store the first solution
+          if (solutions.length === 0) {
+            // Make a deep copy of the board solution
+            var rowsCopy = JSON.parse(JSON.stringify(board.rows()));
+            solutions.push(rowsCopy);  
+          }
 
           // increment the number of found solutions
-          solution++;
+          if (isMiddleCol) {
+            // Only count solutions once due to symmetry
+            //debugger;
+            solution++;
+          } else {
+            solution += 2;
+          }
 
         // otherwise we must increment which row we are on, make a copy of our current board, and recurse
         } else {
           var newRow = row + 1;
           var newBoard = new Board(board.rows());
-          recurseBoard(newRow, newBoard);
+          recurseBoard(newRow, newBoard, isMiddleCol);
         }
         // We reach the end of this solution branch so we need to reset the previous move
         board.togglePiece(row, col);
@@ -51,7 +60,25 @@ window.solveBoard = function(row, board, conflictFn, solutions) {
       }
     }
   }
-  recurseBoard(row, board);
+
+  if (n === 1) {
+    solutions.push([[1]]);
+    return 1;
+  } else {
+    var lastCol = Math.ceil(n / 2) - 1;
+    for (var index = 0; index <= lastCol; index++) {
+      board.togglePiece(0, index);
+      //debugger;
+      // If we are on the middle column of a odd board 
+      var isMiddleCol = ((index === lastCol) && (n % 2));
+      recurseBoard(1, board, isMiddleCol);
+      board.togglePiece(0, index);
+    }
+  }
+
+  // toggle next zero-th row column index
+    // call recurseBoard with  row 1
+  //debugger;
   return solution;
 };
 
