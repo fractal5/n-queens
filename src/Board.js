@@ -247,24 +247,8 @@
         }
       }
       return false; // fixme
-    },
-
-    hasAnyConflicts: function() {
-      return (this.hasAnyRowConflicts() || this.hasAnyColConflicts() || 
-              this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts());
-    },
-
-    copyBoard: function() {
-      var n = this.get('n');
-      var newBoard = new Board({n : n});
-
-      for (var i = 0; i < n; i++) {
-        for (var j = 0; j < n; j++) {
-          newBoard.rows()[i][j] = this.rows()[i][j];
-        }
-      }
-      return newBoard;   
     }
+
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
