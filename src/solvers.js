@@ -34,51 +34,51 @@ window.solveBoard = function(row, board, conflictFn, solutions) {
           if (solutions.length === 0) {
             // Make a deep copy of the board solution
             var rowsCopy = JSON.parse(JSON.stringify(board.rows()));
-            solutions.push(rowsCopy);  
+            solutions.push(rowsCopy);   
           }
 
           // increment the number of found solutions
           if (isMiddleCol) {
             // Only count solutions once due to symmetry
-            //debugger;
             solution++;
           } else {
             solution += 2;
           }
 
-        // otherwise we must increment which row we are on, make a copy of our current board, and recurse
+        // otherwise we must increment which row we are on and recurse
         } else {
-          var newRow = row + 1;
-          var newBoard = new Board(board.rows());
-          recurseBoard(newRow, newBoard, isMiddleCol);
+          recurseBoard(row + 1, board, isMiddleCol);
         }
-        // We reach the end of this solution branch so we need to reset the previous move
-        board.togglePiece(row, col);
-      // if the position is not a legal one, remove the piece
-      } else {
-        board.togglePiece(row, col);
-      }
+      } 
+      // We've returned from the previous solution branch so we need to reset the previous move
+      board.togglePiece(row, col);
     }
   }
 
+  // To solve for the fully symmetric 1x1 solution
   if (n === 1) {
     solutions.push([[1]]);
-    return 1;
+    solution++;
   } else {
+
+    // we wish to optimize and only check half of the board and simply flip for the reflected solution
+    // we first calculate the half way column
     var lastCol = Math.ceil(n / 2) - 1;
     for (var index = 0; index <= lastCol; index++) {
+
+      // toggle piece on index column on zero-th row
+      // we don't need to perform a conflict check since all positions are legal
       board.togglePiece(0, index);
-      //debugger;
+
       // If we are on the middle column of a odd board 
       var isMiddleCol = ((index === lastCol) && (n % 2));
       recurseBoard(1, board, isMiddleCol);
+
+      // untoggle last legal move to reset board
       board.togglePiece(0, index);
     }
   }
 
-  // toggle next zero-th row column index
-    // call recurseBoard with  row 1
-  //debugger;
   return solution;
 };
 
