@@ -12,6 +12,25 @@
 
 // Returns the number of solutions for a given board starting at row with a given conflict test case ie Queens or Rooks
 // Also accumulates solutions to solutions Array
+window.bitSolveBoard = function(ld, cols, rd, callback, n) {
+  var ALL = 1;
+  for (var i = 1; i < n; i++) {
+    ALL = 2* ALL + 1;
+  }
+  if (cols === ALL) {
+    return callback();
+  }
+
+  var poss = ~(ld | cols | rd) & ALL;
+  while ( poss ) {
+    var bit = poss & -poss;
+    poss -= bit;
+    bitSolveBoard((ld|bit)<<1, cols|bit, (rd|bit)>>1, callback ,n);
+  }
+
+
+}
+
 window.solveBoard = function(row, board, conflictFn, solutions) {
 
   var solution = 0;
@@ -146,8 +165,12 @@ window.countNQueensSolutions = function(n) {
     solutionCount = 1;
   // otherwise do the ususal test
   } else {
-    solutionCount = solveBoard(0, testBoard, function (board) {return board.hasAnyQueensConflicts(); }, []);
+    //solutionCount = solveBoard(0, testBoard, function (board) {return board.hasAnyQueensConflicts(); }, []);
+    bitSolveBoard(0, 0, 0, function(){
+      solutionCount++;
+    }, n);
   }
+
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
