@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Worker NQueen Solver</title>
+</head>
+<body>
+  <script src="lib/jquery-1.8.3.js"></script>
+  <script src="lib/underscore.js"></script>
+  <script src="lib/backbone.js"></script>
+  <script src="src/Board.js"></script>
+  <script src="src/BoardView.js"></script>
+  <script src="src/solvers.js"></script>
+  <script>
+    var n = 4; // Hard Coding size of board.
+    var workers = [];
+    var solutionCount = 0;
+    var numSolutionsReturned = 0;
+
+    for (var i = 0; i < n; i++) {
+      workers[i] = new Worker("worker-script.js");
+
+      workers[i].postMessage({n:n, i:i});
+
+      // Try to add a callback function to execute when the worker
+      // replies to us.
+      workers[i].onmessage = function(e) {
+        solutionCount += e.data;
+        numSolutionsReturned++;
+        //console.log("Message received from worker.", e.data);
+
+        if (numSolutionsReturned === n) {
+          console.log("End solutionCount: ", solutionCount);
+        }
+      };
+    }
+  </script>
+
+</body>
+</html>
